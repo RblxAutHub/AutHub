@@ -174,7 +174,6 @@ end
 local farming = false
 local isloading = false
 local isselling = false
-local clean = false
 local filled = false
 
 spawn(function()
@@ -185,7 +184,6 @@ spawn(function()
 
               filled = false
 
-              clean = false
               local root = plr.Character.HumanoidRootPart
               local a, b = pcall(function()
                   for _, v in pairs(plot.WashingMachines:GetChildren()) do 
@@ -205,7 +203,6 @@ spawn(function()
                           root.CFrame = CFrame.new(clothing.Position)+Vector3.new(0,5,0)
                           task.wait(0.1)
                           game:GetService("ReplicatedStorage").Events.GrabClothing:FireServer(clothing)
-                          clean = false
                         end
                         repeat task.wait() until plr.Character:FindFirstChild("Basket")
                       end
@@ -220,12 +217,11 @@ spawn(function()
                       isloading = false
                     end
                   end 
-                  clean = true
               end)
               if not a then
                 _print(b)
               end
-              if buttons['Auto-Farm'] == true and clean == true and isloading == false and filled == false then
+              if buttons['Auto-Farm'] == true and isloading == false and filled == false then
               for _, v in pairs(plot.WashingMachines:GetChildren()) do 
                 if v.Config.CycleFinished.Value == true and running == true and buttons['Auto-Farm'] == true then
                   isselling = true
