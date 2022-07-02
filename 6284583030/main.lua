@@ -1,8 +1,10 @@
 
 function _print(...)
-   --rconsoleprint(...)
-   --rconsoleprint('\n')
+   rconsoleprint(...)
+   rconsoleprint('\n')
 end
+
+_print("Pet simulator X")
 
 local running = true
 
@@ -10,7 +12,7 @@ local ScreenGui = Instance.new("ScreenGui",game.CoreGui)
 
 local buttons = {
     ['Auto-Farm'] = false,
-      ['Auto orbs clear'] = false,
+    ['Auto orbs clear'] = false,
     ['Clear orbs'] = function()
         game:GetService("Workspace")["__THINGS"].Orbs:ClearAllChildren()
     end
