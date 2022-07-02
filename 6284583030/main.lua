@@ -10,6 +10,7 @@ local ScreenGui = Instance.new("ScreenGui",game.CoreGui)
 
 local buttons = {
     ['Auto-Farm'] = false,
+      ['Auto orbs clear'] = false,
     ['Clear orbs'] = function()
         game:GetService("Workspace")["__THINGS"].Orbs:ClearAllChildren()
     end
@@ -151,14 +152,8 @@ spawn(function()
 end)
 
 
-spawn(function()
-    
-    while task.wait(0.5) and running == true do
-        if buttons['Auto-Farm'] == true then
-         claimorbs()
-        end
-    end
-end)
+spawn(function() while task.wait(0.5) and running == true do if buttons['Auto-Farm'] == true then claimorbs() end end end)
+spawn(function() while task.wait(1) and running == true do if buttons['Auto orbs clear'] == true then buttons['Clear orbs'] end end end)
 
 local Frame = Instance.new("Frame")
 local UICorner = Instance.new("UICorner")
