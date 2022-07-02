@@ -195,32 +195,32 @@ UIListLayout.Padding = UDim.new(0,5)
 Frame.Draggable = true
 
 local a, b = pcall(function()
-for Text, Setting in pairs(buttons) do
-    local button = CreateButton()
-    button.Parent = Frame_3
-    button.TextLabel.Text = Text
-   
-   if Setting == false or Setting == true then
-    local function checkcolor()
-        if buttons[Text] == true then
-                button.Frame.BackgroundColor3 = Color3.fromRGB(50,200,100)
-            else
-               button.Frame.BackgroundColor3 = Color3.fromRGB(230, 68, 68) 
-        end
-    end
-   
-   checkcolor()
-   
-    button.Button.MouseButton1Click:Connect(function()
-       buttons[Text] = buttons[Text] == false
-       checkcolor()
-    end)
-    else
-        button.Frame:Destroy()
-         button.Button.MouseButton1Click:Connect(function()
-             buttons[Text]()
-        end)
-end
-end
+
+      for Text, Setting in pairs(buttons) do
+         pcall(function()
+         local button = CreateButton()
+         button.Parent = Frame_3
+         button.TextLabel.Text = Text
+         if Setting == false or Setting == true then
+            local function checkcolor()
+               if buttons[Text] == true then
+                  button.Frame.BackgroundColor3 = Color3.fromRGB(50,200,100)
+               else
+                  button.Frame.BackgroundColor3 = Color3.fromRGB(230, 68, 68) 
+               end
+            end
+            checkcolor()  
+            button.Button.MouseButton1Click:Connect(function()
+                  buttons[Text] = buttons[Text] == false
+                  checkcolor()
+               end)
+         else
+            button.Frame:Destroy()
+            button.Button.MouseButton1Click:Connect(function()
+                  buttons[Text]()
+               end)
+         end
+         end)
+      end
 end)
 
