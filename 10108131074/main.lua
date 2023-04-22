@@ -230,11 +230,13 @@ local a, b = pcall(function()
 
 		local zone = nil
 		local target = nil
+		
+		local heat = 0
 
 		Window.AddToggle("AutoFarm",function()
 
 			local chr = plr.Character
-			local humanoid = chr.Humanoid
+			local humanoid: Humanoid = chr.Humanoid
 			local root = chr.HumanoidRootPart
 
 
@@ -266,10 +268,23 @@ local a, b = pcall(function()
 			if grass then
 				humanoid:MoveTo(grass:GetPivot().Position)
 				--humanoid.WalkSpeed = 50
+				
+				
+				if target == grass then
+					heat += 1
+				else
+					heat = 0
+				end
+				
+				if heat > 20 then
+					humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+					repeat task.wait() until humanoid.FloorMaterial ~= Enum.Material.Air
+				end
+				
 				target = grass
 			end
 
-		end)
+		end,0.1)
 
 		Window.AddToggle("Infinite Gas",function()
 
