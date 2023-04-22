@@ -238,6 +238,19 @@ local a, b = pcall(function()
 			local chr = plr.Character
 			local humanoid: Humanoid = chr.Humanoid
 			local root = chr.HumanoidRootPart
+			
+			local tool = plr.Backpack:FindFirstChildOfClass('Tool')
+			
+			if tool then
+			
+			local args = {
+				[1] = tool,
+				[2] = true
+			}
+
+				game:GetService("ReplicatedStorage").Remotes.Game.ClientToggleEquipTool:FireServer(unpack(args))
+			end
+
 
 
 			local grass = nil
