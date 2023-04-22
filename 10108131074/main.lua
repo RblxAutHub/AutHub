@@ -292,6 +292,7 @@ local a, b = pcall(function()
 				if heat > 20 then
 					humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 					repeat task.wait() until humanoid.FloorMaterial ~= Enum.Material.Air
+					root.CFrame = grass:GetPivot()
 				end
 				
 				target = grass
