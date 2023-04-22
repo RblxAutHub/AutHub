@@ -1,338 +1,375 @@
+local plr = game:GetService('Players').LocalPlayer
+local inst = game:GetService('HttpService'):GenerateGUID(false)
 
-function _print(...)
-  rconsoleprint(...)
-  rconsoleprint('\n')
+local start = os.clock()
+
+local function round(num, decimals)
+	local dec = math.pow(10,decimals)
+	return math.round(num*dec)/dec
+end
+
+local Running = true
+
+function ConvertTime(t)
+	local a = ""
+	
+	a = a.. (t / 60)..':'
+	a = a.. (t % 60)
+	
+	return a
+end
+
+local function ConsolePrint(str)
+	if Running == false then
+		rconsoleprint("["..round(os.clock()-start,2)..'] '..tostring("Instance Crashed").."\n")
+		error("Instance Crashed!")
+	else
+		rconsoleprint("["..round(os.clock()-start,2)..'] '..tostring(str).."\n")
+	end
+end
+--ConsolePrint(ConvertTime(100))
+
+ConsolePrint("> (Starting) "..inst)
+
+
+
+if _G.ResetFarm then
+	_G.ResetFarm()
+	task.wait(0.5)
 end
 
 
-local running = true
-
-local plr = game:GetService("Players").LocalPlayer
-
-local ScreenGui = Instance.new("ScreenGui",game.CoreGui)
-
-if _G.AutHub then _G.AutHub() end
-
-_G.AutHub = function()
-   ScreenGui:Destroy()
-  running = false 
-end
-
-local farming = false
-local plot = nil
-
-function get_plot()
-  local plot = nil
-  
-   for _, v in pairs(workspace.Plots:GetChildren()) do
-       if v.Sign.OwnerName.TextLabel.Text == plr.Name.."'s Bakery" then
-           plot = v   
-       end
-   end 
-   return plot
-end
-
-local Frame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
-local Frame_2 = Instance.new("Frame")
-local UICorner_2 = Instance.new("UICorner")
-local Frame_3 = Instance.new("Frame")
-local ImageLabel = Instance.new("ImageLabel")
-local TextLabel = Instance.new("TextLabel")
-
---Properties:
-Frame.Parent = ScreenGui
-Frame.Active = true
-Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Frame.BackgroundTransparency = 0.500
-Frame.BorderSizePixel = 0
-Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame.Size = UDim2.new(0, 300, 0, 140)
-
-UICorner.CornerRadius = UDim.new(0, 15)
-UICorner.Parent = Frame
-
-Frame_2.Parent = Frame
-Frame_2.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame_2.BackgroundColor3 = Color3.fromRGB(53, 53, 53)
-Frame_2.BorderSizePixel = 0
-Frame_2.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame_2.Size = UDim2.new(1, -4, 1, -4)
-
-UICorner_2.CornerRadius = UDim.new(0, 13)
-UICorner_2.Parent = Frame_2
-
-Frame_3.Parent = Frame_2
-Frame_3.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Frame_3.BackgroundTransparency = 1.000
-Frame_3.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame_3.Size = UDim2.new(1, -10, 1, -10)
-
-ImageLabel.Parent = Frame_3
-ImageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ImageLabel.BackgroundTransparency = 1.000
-ImageLabel.BorderSizePixel = 0
-ImageLabel.Position = UDim2.new(0.5, 0, 0.349999994, 0)
-ImageLabel.Size = UDim2.new(1, 0, 0.600000024, 0)
-ImageLabel.Image = "rbxassetid://1524285772"
-ImageLabel.ScaleType = Enum.ScaleType.Fit
-
-TextLabel.Parent = Frame_3
-TextLabel.AnchorPoint = Vector2.new(0, 1)
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 1.000
-TextLabel.Position = UDim2.new(0, 0, 1, -10)
-TextLabel.Size = UDim2.new(1, 0, 0, 25)
-TextLabel.Font = Enum.Font.SourceSansBold
-TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.TextScaled = true
-TextLabel.TextSize = 14.000
-TextLabel.TextWrapped = true
-
-TextLabel.Text = 'Please claim a factory'
-
-local now = tick()
-
-repeat task.wait() 
-   ImageLabel.Rotation += (tick()-now)*300
-   plot = get_plot()
-   
-   now = tick()
-until plot
-
-Frame:Destroy()
-
-if running == false then return end
-
-local placingitems = false
-
-function get_oven()
-  local obj = nil
-  
-   for _, v in pairs(plot.Ovens:GetChildren()) do 
-      if v.ConverterData.CurrentlyCooking.Value == false then
-          obj = v
-       end
-   end
-   
-  
-  return obj   
-end
-
-function cook(Oven,Name)
-   pcall(function()
-   if Oven and running == true then
-       Oven.ConverterData.noob:FireServer()
-       task.wait(0.5)
-
-       local args = {[1] = Oven,[2] = Name};game:GetService("ReplicatedStorage").Remotes.StartBake:FireServer(unpack(args))
-
-       repeat task.wait(1) 
-       until Oven.Screen.ContentsUI.Contents.Text == 'DONE'  or running == false or Oven.Parent == nil
-       if running == true then
-        repeat task.wait() until placingitems == false
-        if running == true then
-       Oven.ConverterData.__REMOTE:FireServer()
-       task.wait(1)
-       Oven.ConverterData.noob:FireServer()
-       task.wait(1)
-       plot.Shelf.Info:FireServer()
-        end
-       end
-   end
-end)
-end
-
-
-
-local buttons = {
-   ['Auto-Farm Cookies'] = false
+local Config = {
+	WindowColor = Color3.fromRGB(60, 60, 60),
+	Color = Color3.fromRGB(46, 46, 46),
 }
 
-
-
--------GUI
-
-function CreateButton()
-  local Frame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
-local Button = Instance.new("TextButton")
-local TextLabel = Instance.new("TextLabel")
-local Frame_2 = Instance.new("Frame")
-local UICorner_2 = Instance.new("UICorner")
-
---Properties:
-
-Frame.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
-Frame.Size = UDim2.new(1, 0, 0, 26)
-
-UICorner.CornerRadius = UDim.new(0, 10)
-UICorner.Parent = Frame
-
-Button.Name = "Button"
-Button.Parent = Frame
-Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Button.BackgroundTransparency = 1.000
-Button.BorderSizePixel = 0
-Button.Size = UDim2.new(1, 0, 1, 0)
-Button.Font = Enum.Font.SourceSans
-Button.Text = ""
-Button.TextColor3 = Color3.fromRGB(0, 0, 0)
-Button.TextSize = 14.000
-
-TextLabel.Parent = Frame
-TextLabel.AnchorPoint = Vector2.new(0, 0.5)
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 1.000
-TextLabel.Position = UDim2.new(0, 10, 0.5, 0)
-TextLabel.Size = UDim2.new(1, -10, 1, -8)
-TextLabel.Font = Enum.Font.SourceSans
-TextLabel.Text = "Auto-Farm"
-TextLabel.TextColor3 = Color3.fromRGB(225, 225, 225)
-TextLabel.TextScaled = true
-TextLabel.TextSize = 14.000
-TextLabel.TextWrapped = true
-TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-Frame_2.Parent = Frame
-Frame_2.AnchorPoint = Vector2.new(1, 0.5)
-Frame_2.BackgroundColor3 = Color3.fromRGB(230, 68, 68)
-Frame_2.BorderSizePixel = 0
-Frame_2.Position = UDim2.new(1, -10, 0.5, 0)
-Frame_2.Size = UDim2.new(0, 10, 0, 10)
-
-UICorner_2.CornerRadius = UDim.new(1, 0)
-UICorner_2.Parent = Frame_2
-return Frame
+function Style(Obj, CornerRadius, Color)
+	local Corner = Instance.new('UICorner',Obj)
+	Corner.CornerRadius = UDim.new(0,CornerRadius)
+	Obj.BackgroundColor3 = Color or Config.Color
+	Obj.BorderSizePixel = 0
 end
 
----------
+local usi = game:GetService('UserInputService')
 
-function farm(name)
-   local d = 0
-   local ovens = plot.Ovens:GetChildren()
-   local total = 0
-   if farming == false then
-               local a, b = pcall(function()
-               farming = true
-               
-                   for _, v in pairs(ovens) do 
-                       if v.ConverterData.CurrentlyCooking.Value == false and running == true  then
-                           game:GetService("ReplicatedStorage").Remotes.Trash:FireServer()
-                           task.wait(0.2)
-                           game:GetService("ReplicatedStorage").Remotes.Trash:FireServer()
-                           placingitems = true
-                          repeat task.wait(0.5)
-                            if running == true then
-                            local ingredient = nil
-                             
-                              plr.Character.HumanoidRootPart.CFrame = v.Bounds.CFrame*CFrame.new(-5,1,-1)*CFrame.Angles(0,-90,0)
-                              plr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping, true)
-                              local items = workspace.Ingredients:GetChildren()
-                              ingredient = items[math.random(1,#items)]
-                              
-                              task.wait()
-                              if running == true then
-                                local args = {[1] = ingredient}
-                                  game:GetService("ReplicatedStorage").Remotes.TI_0:FireServer(unpack(args))
-                                  task.wait(0.5)
-                                end
-                              end
-                            until #v.ConverterData.ConverterContents.Ingredients:GetChildren() == v.ConverterData.MaxContents.Value or running == false
-                          task.wait(1)
-                          game:GetService("ReplicatedStorage").Remotes.Trash:FireServer()
-           
-                          task.wait(0.2)
-                          placingitems = false
-                                                  spawn(function()
-                                                    cook(v,'Cookies')
-                                                      d += 1
-                                                    end)
-                
-                        end
-                  end
-                task.wait(1)
-           end)
-   repeat task.wait(1) until d == #ovens
-       farming = false
-   end
+function CreateWindow(Title)
+	local self = {}
+
+	local screengui = Instance.new("ScreenGui",game:GetService("CoreGui"))
+	local Window = Instance.new("Frame",screengui)
+	Window.Size = UDim2.new(0,300,0,250)
+	Window.Active = true
+
+	local stroke = Instance.new('UIStroke',Window)
+	stroke.Thickness = 3
+	stroke.Color = Color3.fromRGB(0, 0, 0)
+	stroke.Transparency = 0.5
+
+	local MouseUp = true
+	Window.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			MouseUp = false
+			local StartPos = input.Position
+
+			local WindowPos = Vector2.new(Window.Position.X.Offset,Window.Position.Y.Offset-36)
+
+			local a, b = pcall(function()
+				repeat task.wait() 
+
+					local mousePos = usi:GetMouseLocation()
+					local newPos = Vector2.new((mousePos.X-StartPos.X) + WindowPos.X,(mousePos.Y-StartPos.Y) + WindowPos.Y)
+					Window:TweenPosition(UDim2.new(0,newPos.X,0,newPos.Y),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.05,true)
+				until not usi:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or  Running == false
+			end)
+		end
+	end)
+
+	local TitleLabel = Instance.new("TextLabel", Window)
+	TitleLabel.Text = Title or "Window"
+	TitleLabel.Position = UDim2.new(0,0,0,10)
+	TitleLabel.Size = UDim2.new(1,0,0,20)
+	TitleLabel.TextColor3 = Color3.fromRGB(222,222,222)
+	TitleLabel.Font = Enum.Font.SourceSansBold
+	TitleLabel.TextScaled = true
+	TitleLabel.BackgroundTransparency = 1
+
+	local ButtonFrame = Instance.new("Frame", Window)
+	ButtonFrame.Position = UDim2.new(0,10,0,40)
+	ButtonFrame.Size = UDim2.new(1,-20,1,-50)
+	ButtonFrame.BackgroundTransparency = 1
+
+	local list = Instance.new("UIListLayout",ButtonFrame)
+	list.Padding = UDim.new(0,5)
+
+
+	--local Tabs = Instance.new("Frame", Window)
+	--Tabs.Position = UDim2.new(0,10,0,40)
+	--Tabs.Size = UDim2.new(1,-20,0,30)
+	--Style(Tabs,8,Config.Color)
+
+	self.Style = function(...) Style(Window,...) end
+
+	local Toggles = {}
+
+	self.GetValue = function(Key) return Toggles[Key] end
+
+	self.AddToggle = function(Name, Func, CoolDown, Thread)
+		local Button = Instance.new("TextButton",ButtonFrame)
+		Style(Button,14,Config.Color)
+		Button.Size = UDim2.new(1,0,0,30)
+		Button.AutoButtonColor = false
+		Button.Text = ""
+
+		local Label = Instance.new("TextLabel", Button)
+		Label.Text = Name
+		Label.TextColor3 = Color3.fromRGB(222,222,222)
+		Label.Font = Enum.Font.SourceSansBold
+		Label.BackgroundTransparency = 1
+		Label.Size = UDim2.new(1,0,1,0)
+		Label.Position = UDim2.new(0,10,0,0)
+		Label.TextXAlignment = Enum.TextXAlignment.Left
+		Label.TextSize = 16
+
+		local Toggled = Instance.new("Frame", Button)
+		Style(Toggled,100)
+		Toggled.BackgroundColor3 = Color3.fromRGB(255, 41, 41)
+		Toggled.Size = UDim2.new(0,10,0,10)
+		Toggled.Position = UDim2.new(1,-10,0.5,0)
+		Toggled.AnchorPoint = Vector2.new(1,0.5)
+
+
+		Toggles[Name] = false
+
+		local Finished = false
+
+		Button.MouseButton1Click:Connect(function()
+			local Value = Toggles[Name] == false
+			Toggles[Name] = Value
+
+			if Value == true then
+				Toggled.BackgroundColor3 = Color3.fromRGB(87, 238, 53)
+			else
+				Toggled.BackgroundColor3 = Color3.fromRGB(255, 41, 41)
+			end
+
+
+
+			if Value == false then
+				return
+			end
+			repeat 
+				Finished = true
+				local a ,b = pcall(Func)
+				if not a then
+					ConsolePrint(Name..", Errored: "..tostring(b))
+				end
+				Finished = false
+				task.wait(CoolDown)
+			until Running == false or Toggles[Name] == false
+		end)
+	end
+
+	self.AddButton = function(Name, Func)
+		local self = {}
+
+		local Button = Instance.new("TextButton",ButtonFrame)
+		Style(Button,14,Config.Color)
+		Button.Size = UDim2.new(1,0,0,30)
+		Button.AutoButtonColor = false
+		Button.Text = ""
+
+		local Label = Instance.new("TextLabel", Button)
+		Label.Text = Name
+		Label.TextColor3 = Color3.fromRGB(222,222,222)
+		Label.Font = Enum.Font.SourceSansBold
+		Label.BackgroundTransparency = 1
+		Label.Size = UDim2.new(1,0,1,0)
+		Label.Position = UDim2.new(0,10,0,0)
+		Label.TextXAlignment = Enum.TextXAlignment.Left
+		Label.TextSize = 16
+
+		Button.MouseButton1Click:Connect(function()
+
+			local a ,b = pcall(Func)
+			if not a then
+				ConsolePrint(Name..", Errored: "..tostring(b))
+			end
+		end)
+
+		local destroyed = false
+		self.Destroy = function() 
+			if destroyed then return end
+			destroyed = true
+			Button:Destroy()
+		end
+
+		return self
+	end
+
+	--self.AddTab = function(Name)
+
+	--end
+
+	self.Destroy = function() screengui:Destroy() end
+
+	return self
 end
 
-spawn(function()
-   while task.wait(1) and running == true do
-       if buttons['Auto-Farm Cookies'] == true then
-           farm('Cookies')
-       end
-   end
-end)
-
-local Frame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
-local Frame_2 = Instance.new("Frame")
-local UICorner_2 = Instance.new("UICorner")
-local Frame_3 = Instance.new("Frame")
-local UIListLayout = Instance.new("UIListLayout")
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-Frame.Parent = ScreenGui
-Frame.Active = true
-Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Frame.BackgroundTransparency = 0.500
-Frame.BorderSizePixel = 0
-Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame.Size = UDim2.new(0, 250, 0, 120)
-UICorner.CornerRadius = UDim.new(0, 15)
-UICorner.Parent = Frame
-Frame_2.Parent = Frame
-Frame_2.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame_2.BackgroundColor3 = Color3.fromRGB(53, 53, 53)
-Frame_2.BorderSizePixel = 0
-Frame_2.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame_2.Size = UDim2.new(1, -4, 1, -4)
-UICorner_2.CornerRadius = UDim.new(0, 13)
-UICorner_2.Parent = Frame_2
-Frame_3.Parent = Frame_2
-Frame_3.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Frame_3.BackgroundTransparency = 1.000
-Frame_3.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame_3.Size = UDim2.new(1, -10, 1, -10)
-UIListLayout.Parent = Frame_3
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0,5)
-
-Frame.Draggable = true
+function CheckForAnotherInstance()
+	if Running == false then ConsolePrint("FORCE CLOSING"); error('Force Close, another instance started') end
+end
 
 local a, b = pcall(function()
 
-     for Text, Setting in pairs(buttons) do
-        pcall(function()
-        local button = CreateButton()
-        button.Parent = Frame_3
-        button.TextLabel.Text = Text
-        if Setting == false or Setting == true then
-           local function checkcolor()
-              if buttons[Text] == true then
-                 button.Frame.BackgroundColor3 = Color3.fromRGB(50,200,100)
-              else
-                 button.Frame.BackgroundColor3 = Color3.fromRGB(230, 68, 68) 
-              end
-           end
-           checkcolor()  
-           button.Button.MouseButton1Click:Connect(function()
-                 buttons[Text] = buttons[Text] == false
-                 checkcolor()
-              end)
-        else
-           button.Frame:Destroy()
-           button.Button.MouseButton1Click:Connect(function()
-                 buttons[Text]()
-              end)
-        end
-        end)
-     end
+
+	local Window = CreateWindow()
+	spawn(function()
+		Window.Style(12,Config.WindowColor)
+
+
+		local plot = nil
+
+		local ClaimBakery = Window.AddButton('Claim Bakery', function()
+
+		end)
+
+		repeat
+			for _, v in pairs(workspace.Plots:GetChildren()) do
+				if v.Sign.OwnerName.TextLabel.Text == plr.Name .. "'s Bakery" then
+					plot = v
+					break
+				end
+			end
+			if not plot then
+				task.wait(0.1)
+			end
+		until plot or Running == false
+
+		if Running == false then
+			return
+		end
+
+		ConsolePrint("Claimed plot: "..plot:GetFullName())
+
+		ClaimBakery.Destroy()
+
+		local Enemy = nil
+
+		local finished = true
+		
+		local function getCapacity()
+			local chr = plr.Character
+			local cart = chr:FindFirstChildOfClass('Model')
+			if cart then
+				return game:GetService('ReplicatedStorage').Carts:FindFirstChild(cart.Name).Stats.Capacity.Value
+			end
+			return -1
+		end
+
+		local function MaxIngredients()
+			local chr = plr.Character
+			return #chr.CarryingContents.Ingredients:GetChildren() == getCapacity()
+		end
+
+		
+		Window.AddToggle("AutoFarm",function()
+
+			if finished == false then return end
+
+			finished = false
+
+			pcall(function()
+				local chr = plr.Character
+				local humanoid = chr.Humanoid
+				local root = chr.HumanoidRootPart
+				
+				for _, v in pairs(plot.Ovens:GetChildren()) do
+					pcall(function()
+						if #v.ConverterData.ConverterContents.Ingredients:GetChildren() == v.ConverterData.MaxContents.Value
+							and v.ConverterData.CurrentlyCooking.Value == false then
+							local args = {
+								[1] = v,
+								[2] = "Cookies"
+							}
+
+							game:GetService("ReplicatedStorage").Remotes.StartBake:FireServer(unpack(args))
+						end
+					end)
+					pcall(function()
+						if #v.ConverterData.ConverterContents.Products:GetChildren() > 0 then
+							v.ConverterData.__REMOTE:FireServer()
+							repeat task.wait(0.1) until chr:FindFirstChild('Tray')
+							plot.Shelf.Info:FireServer()
+							repeat task.wait(0.1) until not chr:FindFirstChild('Tray')
+						end
+					end)
+				end
+
+				local gotIngredients = MaxIngredients()
+				if gotIngredients == false then
+					repeat task.wait()
+						for _, v in pairs(workspace.Ingredients:GetChildren()) do
+							
+							gotIngredients = MaxIngredients()
+							if gotIngredients == true then break end
+							
+							game:GetService("ReplicatedStorage").Remotes.TI_0:FireServer(v:GetChildren()[1])
+							CheckForAnotherInstance()
+							task.wait()
+						end
+
+					until gotIngredients == true or Window.GetValue('AutoFarm') == false
+				end
+				CheckForAnotherInstance()
+				assert(Window.GetValue('AutoFarm'), 'Autofarm stopped')
+				assert(MaxIngredients(),"More ingredients needed!")
+
+				
+				local oven = nil
+				
+				for _, v in pairs(plot.Ovens:GetChildren()) do
+					if oven then break end
+					local a, b = pcall(function()
+						if #v.ConverterData.ConverterContents.Ingredients:GetChildren() <  v.ConverterData.MaxContents.Value
+							and #v.ConverterData.ConverterContents.Products:GetChildren() == 0 then
+							oven = v
+						end
+					end)
+					if not a then
+						ConsolePrint(b)
+					end
+				end
+				
+				if oven then
+					oven.ConverterData.noob:FireServer()
+				end
+			end)
+
+			finished = true
+
+		end, 0.5)
+
+
+
+	end)
+
+	_G.ResetFarm = function()
+		Running = false
+		Window.Destroy()
+	end
 end)
+
+
+
+if not a then
+	Running = false
+	ConsolePrint("> Stopped instance "..inst)
+	ConsolePrint("Message: "..b)
+	return
+else
+	ConsolePrint("> (Running!) "..inst)
+
+end
+
 
